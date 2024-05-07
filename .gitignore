@@ -1,0 +1,7 @@
+*.zip
+__pycache__
+tests
+*.ok_history
+*.bak
+*.dat
+*.dir
