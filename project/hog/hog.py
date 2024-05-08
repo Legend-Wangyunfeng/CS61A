@@ -61,6 +61,11 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls == 0:
+        return boar_brawl(player_score, opponent_score)
+    else:
+        return roll_dice(num_rolls, dice)
+    # END PROBLEM 3
     # END PROBLEM 3
 
 
@@ -86,12 +91,28 @@ def num_factors(n):
     """Return the number of factors of N, including 1 and N itself."""
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        return 1
+    count = 2
+    for i in range(2, n//2+1):
+        if n % i == 0:
+            count += 1
+    return count
+    # END PROBLEM 4
     # END PROBLEM 4
 
 def sus_points(score):
     """Return the new score of a player taking into account the Sus Fuss rule."""
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    count = num_factors(score)
+    if count == 3 or count == 4:
+        res = score + 1
+        while not is_prime(res):
+            res += 1
+        return res
+    else:
+        return score
     # END PROBLEM 4
 
 def sus_update(num_rolls, player_score, opponent_score, dice=six_sided):
@@ -100,6 +121,8 @@ def sus_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    score = player_score + take_turn(num_rolls, player_score, opponent_score, dice)
+    return sus_points(score)
     # END PROBLEM 4
 
 
@@ -139,8 +162,24 @@ def play(strategy0, strategy1, update,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    num0 = score0
+    num1 = score1
+    while num0 < goal and num1 < goal:
+        if who == 0:
+            num_rolls = strategy0(num0, num1)
+            num0 = update(num_rolls, num0, num1, dice)
+            score0 += 1
+            if num0 >= goal:
+                break
+        else:
+            num_rolls = strategy1(num1, num0)
+            num1 = update(num_rolls, num1, num0, dice)
+            score1 += 1
+            if num1 >= goal:
+                break
+        who = 1- who
     # END PROBLEM 5
-    return score0, score1
+    return num0, num1
 
 
 #######################
