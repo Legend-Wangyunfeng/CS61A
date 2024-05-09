@@ -66,7 +66,6 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     else:
         return roll_dice(num_rolls, dice)
     # END PROBLEM 3
-    # END PROBLEM 3
 
 
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
@@ -98,7 +97,6 @@ def num_factors(n):
         if n % i == 0:
             count += 1
     return count
-    # END PROBLEM 4
     # END PROBLEM 4
 
 def sus_points(score):
@@ -203,6 +201,7 @@ def always_roll(n):
     assert n >= 0 and n <= 10
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    return lambda score, opponent_score: n
     # END PROBLEM 6
 
 
@@ -234,6 +233,12 @@ def is_always_roll(strategy, goal=GOAL):
     """
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    target = strategy(0, 0)
+    for x in range(goal):
+        for y in range(goal):
+            if strategy(x, y) != target:
+                return False
+    return True
     # END PROBLEM 7
 
 
@@ -250,6 +255,15 @@ def make_averaged(original_function, samples_count=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    res = 0
+    def averaged(*args):
+        nonlocal res
+        res = 0
+        for _ in range(samples_count):
+            res += original_function(*args)
+        return res / samples_count
+    return averaged
+
     # END PROBLEM 8
 
 
@@ -264,6 +278,7 @@ def max_scoring_num_rolls(dice=six_sided, samples_count=1000):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+
     # END PROBLEM 9
 
 
@@ -348,3 +363,5 @@ def run(*args):
 
     if args.run_experiments:
         run_experiments()
+
+
