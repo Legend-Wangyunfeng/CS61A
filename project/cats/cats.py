@@ -31,8 +31,15 @@ def pick(paragraphs, select, k):
     """
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    num = 0
+    for i in paragraphs:
+        if select(i):
+            if num == k:
+                return i
+            num += 1
+            
+    return ''
     # END PROBLEM 1
-
 
 def about(subject):
     """Return a select function that returns whether
@@ -50,6 +57,12 @@ def about(subject):
     assert all([lower(x) == x for x in subject]), 'subjects should be lowercase.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    def fn(s):
+        for word in s.split():
+            if remove_punctuation(lower(word)) in subject:
+                return True
+        return False
+    return fn
     # END PROBLEM 2
 
 
@@ -80,6 +93,21 @@ def accuracy(typed, source):
     source_words = split(source)
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    total = max(len(typed_words), len(source_words))
+    count = 0
+    if total == 0:
+        return 100.0
+    elif len(typed_words) == 0 or len(source_words) == 0:
+        return 0.0
+    if len(typed_words) < len(source_words):
+        for i in range(len(typed_words)):
+            if typed_words[i] == source_words[i]:
+                count += 1
+    else:
+        for i in range(len(source_words)):
+            if typed_words[i] == source_words[i]:
+                count += 1
+    return float(count*100/len(typed_words))
     # END PROBLEM 3
 
 
@@ -98,6 +126,7 @@ def wpm(typed, elapsed):
     assert elapsed > 0, 'Elapsed time must be positive'
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    return float(len(typed)/5*60/elapsed)
     # END PROBLEM 4
 
 
@@ -127,6 +156,24 @@ def autocorrect(typed_word, word_list, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if typed_word in word_list:
+        # print(typed_word)
+        return typed_word
+    
+    else:
+        correct = False
+        min_diff = limit
+        min_word = typed_word
+        for word in word_list:
+            if diff_function(typed_word, word, limit) <= min_diff and not correct:
+                min_diff = diff_function(typed_word, word, limit)
+                min_word = word
+                correct = True
+            elif diff_function(typed_word, word, limit) < min_diff and correct:
+                min_diff = diff_function(typed_word, word, limit)
+                min_word = word
+        # print(min_word)
+        return min_word
     # END PROBLEM 5
 
 
