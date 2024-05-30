@@ -104,6 +104,7 @@ class Ant(Insect):
 
     def __init__(self, health=1):
         super().__init__(health)
+        self.double_damage = False
 
     def can_contain(self, other):
         return False
@@ -147,7 +148,9 @@ class Ant(Insect):
     def double(self):
         """Double this ants's damage, if it has not already been doubled."""
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        if not self.double_damage:
+            self.damage *= 2
+            self.double_damage = True
         # END Problem 12
 
 
@@ -463,7 +466,7 @@ class QueenAnt(ThrowerAnt):
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
 
     def action(self, gamestate):
@@ -471,7 +474,16 @@ class QueenAnt(ThrowerAnt):
         in her tunnel.
         """
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        super().action(gamestate)
+        now_at = self.place.exit
+        while now_at is not None:
+            if now_at.ant is not None:
+                print("DEBUG:","double", now_at.ant)
+                Ant.double(now_at.ant)
+                if now_at.ant.is_container and now_at.ant.ant_contained:
+                    Ant.double(now_at.ant.ant_contained)
+
+            now_at = now_at.exit
         # END Problem 12
 
     def reduce_health(self, amount):
@@ -479,7 +491,9 @@ class QueenAnt(ThrowerAnt):
         remaining, signal the end of the game.
         """
         # BEGIN Problem 12
-        "*** YOUR CODE HERE ***"
+        Ant.reduce_health(self, amount)
+        if self.health <= 0:
+            raise AntsLoseException()
         # END Problem 12
 
 
