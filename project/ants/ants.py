@@ -52,6 +52,7 @@ class Insect:
     next_id = 0  # Every insect gets a unique id number
     damage = 0
     # ADD CLASS ATTRIBUTES HERE
+    is_waterproof = False
 
     def __init__(self, health, place=None):
         """Create an Insect with a health amount and a starting PLACE."""
@@ -176,9 +177,11 @@ class ThrowerAnt(Ant):
     implemented = True
     damage = 1
     food_cost = 3
-    initial_health = 1
     lower_bound = 0
     upper_bound = float('inf')
+
+    def __init__(self, health=1):
+        super().__init__(health)
 
     def nearest_bee(self):
         """Return the nearest Bee in a Place (that is not the hive) connected to
@@ -236,7 +239,10 @@ class ShortThrower(ThrowerAnt):
     implemented = True   # Change to True to view in the GUI
     lower_bound = 0
     upper_bound = 3
-    
+
+    def __init__(self, health=1):
+        super().__init__(health)
+
     # END Problem 4
 
 
@@ -249,6 +255,9 @@ class LongThrower(ThrowerAnt):
     # BEGIN Problem 4
     implemented = True   # Change to True to view in the GUI
     lower_bound = 5
+
+    def __init__(self, health=1):
+        super().__init__(health)
     # END Problem 4
 
 
@@ -260,7 +269,7 @@ class FireAnt(Ant):
     food_cost = 5
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 5
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 5
 
     def __init__(self, health=3):
@@ -276,14 +285,11 @@ class FireAnt(Ant):
         """
         # BEGIN Problem 5
         bees = self.place.bees
-        super().reduce_health(amount)
-        for bee in bees:
+        Ant.reduce_health(self, amount)
+        if self.health <= 0:
+            amount += self.damage
+        for bee in bees[:]:
             bee.reduce_health(amount)
-        
-    def zero_health_callback(self):
-        tmp = self.place.bees[:]
-        for bee in tmp:
-            bee.reduce_health(self.damage)
         
         # END Problem 5
 
@@ -344,7 +350,7 @@ class HungryAnt(Ant):
                 bee = random_bee(self.place.bees)
                 damage = bee.health
                 bee.reduce_health(damage)
-
+                self.turns_to_chew = self.chewing_turns
         else:
             self.turns_to_chew -= 1
         # END Problem 6
@@ -405,7 +411,23 @@ class BodyguardAnt(ContainerAnt):
     # END Problem 8c
 
 # BEGIN Problem 9
-# The TankAnt class
+class TankAnt(ContainerAnt):
+
+    name = 'Tank'
+    food_cost = 6
+    implemented = True   # Change to True to view in the GUI
+    damage = 1
+
+    def __init__(self, health=2):
+        super().__init__(health)
+
+    def action(self, gamestate):
+        for bee in self.place.bees[:]:
+            print("DEBUG:","reduce", self.damage)
+            bee.reduce_health(self.damage)
+        if self.ant_contained is not None:
+            print("DEBUG:","action")
+            self.ant_contained.action(gamestate)
 # END Problem 9
 
 
@@ -416,11 +438,21 @@ class Water(Place):
         """Add an Insect to this place. If the insect is not waterproof, reduce
         its health to 0."""
         # BEGIN Problem 10
-        "*** YOUR CODE HERE ***"
+        super().add_insect(insect)
+        if not insect.is_waterproof:
+            insect.reduce_health(insect.health)
         # END Problem 10
 
 # BEGIN Problem 11
-# The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+
+    name = 'Scuba'
+    food_cost = 6
+    implemented = True   # Change to True to view in the GUI
+    is_waterproof = True
+
+    def __init__(self, health=1):
+        super().__init__(health)
 # END Problem 11
 
 
